@@ -6,13 +6,42 @@ import "react-toastify/dist/ReactToastify.css";
 import Select from 'react-select';
 import userStore from "../../zustand/store.ts";
 import {createUserAction, duplicationIdAction} from "../../api/userActions.ts";
+import {ApiResponse} from "../../types/response.ts";
+import CustomAlert from "../../components/customAlert.tsx";
+import Modal from "react-modal";
+import {Base64} from "js-base64";
+
+Modal.setAppElement("#root");
 
 const signUp: React.FC = () => {
-    const { userDto, updateUserField, saveUserToStorage } = userStore();
+    const { userDto, updateUserField } = userStore();
+
+    const customModalStyles: Modal.Styles = {
+        overlay: {
+            backgroundColor: " rgba(0, 0, 0, 0.4)",
+            width: "100%",
+            // height: "100vh",
+            zIndex: "10",
+            position: "fixed",
+            top: "0",
+            left: "0",
+        },
+        content: {
+            width: "500px",
+            zIndex: "150",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "10px",
+            boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.25)",
+            backgroundColor: "white",
+            justifyContent: "center",
+            overflow: "auto",
+        },
+    };
 
     const handleChange = (field: keyof typeof userDto, value: any) => {
-        console.log(field);
-        console.log(value);
         updateUserField(field, value);
     };
 
@@ -21,8 +50,10 @@ const signUp: React.FC = () => {
         back: ''
     });
 
+    const [resData, setResData] = useState<ApiResponse<any> | undefined>(undefined);
+    const [showAlert, setShowAlert] = useState(false);
     const [duplicateId, setDuplicateId] = useState(false);
-
+    const [phoneNumber, setPhoneNumber] = useState('');
     // 가입하기
     const registerSubmit = async (e: React.FormEvent) => {
         e.preventDefault(); // 기본 동작(페이지 리프레시) 방지
@@ -44,10 +75,23 @@ const signUp: React.FC = () => {
             console.log(resultEmail);
             updateUserField('email', resultEmail);
         }
+
+        if(!_.isEmpty(phoneNumber)){
+            console.log(Base64.encode(phoneNumber, true));
+            updateUserField("phoneNumber", Base64.encode(phoneNumber, true));
+        }
         console.log(userDto);
 
+
         try {
-            const res = await createUserAction(userDto);
+            const result = await createUserAction(userDto);
+            console.log(result);
+            setResData(result);
+            if(result.result == 0){
+                setShowAlert(true);
+            }else{
+                toast.warning(result.desc, { position: "bottom-center"});
+            }
         }catch (e) {
             console.error("회원가입 중 오류 발생", e);
         }
@@ -100,7 +144,10 @@ const signUp: React.FC = () => {
             <div className="w-full">
                 <div className="flex justify-center items-center h-screen bg-gray-200">
                     <div className="bg-white p-8 rounded-lg shadow-lg mainBox">
-                        <h2 className="text-2xl font-semibold mb-6 text-center">회원가입</h2>
+                        <div className={"flex justify-center w-full text-center"}>
+                            <img src={"icons/main_logo.png"} style={{width:'10%'}} />
+                            <h2 className="text-2xl font-bold text-center text-amber-400 content-center">LEMON</h2>
+                        </div>
                         <form onSubmit={registerSubmit}>
                             <div className="mt-12 mb-6">
                                 <label htmlFor="loginId" className="w-full mb-2 font-bold flex justify-start text-sm font-medium text-gray-700">
@@ -113,6 +160,7 @@ const signUp: React.FC = () => {
                                             type="text"
                                             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={userDto.loginId}
+                                            readOnly={duplicateId}
                                             onChange={(e) => handleChange('loginId', e.target.value)}
                                             placeholder="아이디를 입력하세요"
                                             required
@@ -240,8 +288,8 @@ const signUp: React.FC = () => {
                                     id="phone"
                                     type="tel"
                                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={userDto.phoneNumber}
-                                    onChange={(e) => handleChange('phoneNumber', e.target.value)}
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
                                     placeholder="핸드폰 번호를 입력하세요"
                                     required
                                 />
@@ -261,6 +309,14 @@ const signUp: React.FC = () => {
 
             {/* 알림 컴포넌트 */}
             <ToastContainer />
+            {showAlert && resData !== undefined && <Modal
+                isOpen={showAlert}
+                onRequestClose={() => setShowAlert(false)} // 모달 바깥을 클릭하거나 ESC 키를 누르면 닫힘
+                style={customModalStyles}
+                contentLabel="회원가입 결과"
+            >
+                <CustomAlert result={resData.result} desc={resData.desc} data={resData.data}/>
+            </Modal>}
         </>
     )
 }
