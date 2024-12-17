@@ -1,20 +1,22 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import LoginPage from './pages/auth/loginPage.tsx';
-import {useEffect} from "react";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './pages/auth/login.tsx';
+import React, {useEffect} from "react";
 import './App.css'
 import SignUp from "./pages/auth/signUp.tsx";
+import PrivateRoute from "./components/privateRoute.tsx";
+import Main from "./pages/auth/main.tsx";
 
 const App: React.FC = () => {
-    useEffect(()=> {
-        console.log("여기는 시작페이지입니다.");
-    })
     return (
         <>
             <Router>
                 <Routes>
-                    <Route path="/" element={<LoginPage />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/signUp" element={<SignUp />} />
-                    {/* 다른 페이지 추가 가능 */}
+
+                    <Route element={<PrivateRoute />}>
+                        <Route path="/main" element={<Main />} />
+                    </Route>
                 </Routes>
             </Router>
         </>
