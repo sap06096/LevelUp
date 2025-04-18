@@ -3,16 +3,15 @@ import {ApiResponse} from "../types/response.ts";
 import {api} from "../axios.ts"
 
 // 로그인 요청 액션 함수
-export const loginAction = async (postData:loginType) => {
+export const loginAction = async <T = any>(postData:loginType): Promise<ApiResponse<T>> => {
     try {
         const res = await api.post('/api/users/login', postData);
         return res.data;
     }catch (e) {
-        console.log(e);
+        console.error(e);
         throw e;
     }
 };
-
 
 // 아이디 중복체크
 export const duplicationIdAction =  async <T = any>(loginId: string): Promise<ApiResponse<T>> => {
@@ -41,9 +40,7 @@ export const createUserAction = async <T = any>(postData: userType): Promise<Api
 export const getUserByUserToken = async <T = any>(userToken: string): Promise<ApiResponse<T>> => {
     try {
         const res = await api.get('/api/users/user/userToken', {
-            headers: {
-                Authorization: `Bearer ${userToken}`, // 여기서 헤더를 명시적으로 설정
-            }
+            params: {userToken}
         });
         return res.data;
     }catch (e) {
