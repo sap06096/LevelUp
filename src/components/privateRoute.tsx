@@ -5,15 +5,17 @@ import _ from "lodash";
 
 const PrivateRoute: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // 로딩 상태를 나타내기 위해 null 사용
-    const userToken = localStorage.getItem("US_TK");
+    const userToken:string | null = localStorage.getItem("US_TK");
 
     useEffect(() => {
         const validateToken = async (): Promise<boolean> => {
             console.log("여기타냐?")
-            if (_.isEmpty(userToken)) {
+            if (!userToken) {
+                setTimeout(() => {
+                    alert("로그인 정보가 없습니다.");
+                }, 500);
                 return false; // 토큰이 없으면 인증 실패
             }
-
             try {
                 console.log("여기타냐?")
                 const res = await getUserByUserToken(userToken);

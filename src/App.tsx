@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/auth/login.tsx';
-import React, {useEffect} from "react";
 import './App.css'
 import SignUp from "./pages/auth/signUp.tsx";
 import PrivateRoute from "./components/privateRoute.tsx";

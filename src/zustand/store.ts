@@ -1,5 +1,6 @@
-import { create } from 'zustand';
+import {create} from 'zustand';
 import {userType} from "../types/user.ts";
+import { persist } from "zustand/middleware";
 
 // 상태의 타입 정의
 interface type {
@@ -9,6 +10,12 @@ interface type {
     updateUserField: (field: keyof userType, value: any) => void;
     clearUser: () => void;
     saveUserToStorage:(userToken: string)=>void;
+}
+
+interface TabType {
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
+    getActiveTab: () => string;
 }
 
 const userDto:userType = {
@@ -60,5 +67,20 @@ const userStore = create<type>((set, get) => ({
     },
 
 }));
+
+const tabList: string[] = ['home', 'registerProduct', 'myProducts', 'messenger'];
+
+export const tabStore = create<TabType>()(
+    persist<TabType>(
+        (set, get) => ({
+            activeTab: tabList[0],
+            setActiveTab: (tab: string) => set({ activeTab: tab }),
+            getActiveTab: () => get().activeTab,
+        }),
+        {
+            name: "zustand-storage", // localStorage에 저장될 key
+        }
+    )
+);
 
 export default userStore;
