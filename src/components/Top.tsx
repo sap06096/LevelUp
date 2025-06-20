@@ -26,7 +26,7 @@ const Top:React.FC = () => {
 
     return (
         <>
-            <nav className="px-80 py-4 border-b">
+            <nav className="py-4 border-b paddingBox">
                 <div className={"w-full flex justify-end"}>
                     {user.getUser().userToken == null ? (
                         <a href="#" className="text-gray-500 mx-8">

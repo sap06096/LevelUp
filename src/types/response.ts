@@ -1,5 +1,6 @@
 // 제네릭으로 추가 데이터 타입 정의
 import {userType} from "./user.ts";
+import {categoryType} from "../zustand/store.ts";
 
 export type ApiResponse<T = any> = {
     data?: T, // 추가 데이터는 유동적
@@ -8,3 +9,4 @@ export type ApiResponse<T = any> = {
 }
 
 export type UserResponse = ApiResponse<userType>;
+export type CategoryResponse = ApiResponse<categoryType[]>;

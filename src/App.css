@@ -117,7 +117,26 @@
   color: #aaa;
 }
 
-.section {
-
+.paddingBox {
+  padding-left: 32rem;
+  padding-right: 32rem;
 }
 
+.gMPvsn {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgb(216, 12, 24);
+}
+
+.iMPvsn {
+  color: rgb(245, 126, 0);
+  font-size: 14px;
+  margin-top: 0.8rem;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.active {
+  color: rgb(216, 12, 24);
+}
