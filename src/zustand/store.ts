@@ -83,4 +83,35 @@ export const tabStore = create<TabType>()(
     )
 );
 
+export type categoryType = {
+    id: number;
+    name: string;
+    parent_id: number| undefined;
+    level: number;
+    sort_order: number | undefined;
+}
+
+interface CategoryType {
+    categoryDto: categoryType;
+    getCategory: () => categoryType;
+    setCategory: (newCategory: categoryType) => void;
+}
+
+const categoryDto:categoryType = {
+    id: 0,
+    name: '',
+    parent_id: undefined,
+    level: 1,
+    sort_order: undefined
+}
+
+export const categoryStore = create<CategoryType>((set, get)=> ({
+    categoryDto: {...categoryDto},
+    setCategory: (category) => set(() => ({categoryDto: category })),
+    getCategory: () => {
+        const category:categoryType = get().categoryDto;
+        return category;
+    },
+}));
+
 export default userStore;
